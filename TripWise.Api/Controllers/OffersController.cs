@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
 using TripWise.Application.Interfaces.Services;
 using TripWise.Domain.Entities;
 
@@ -6,6 +7,7 @@ namespace TripWise.Api.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
+    [Authorize] // 🔒 Requires authentication
     public class OffersController : ControllerBase
     {
         private readonly IOfferService _offerService;
