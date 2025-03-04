@@ -1,21 +1,24 @@
-﻿namespace TripWise.Application.DTOs
+﻿using System.ComponentModel.DataAnnotations;
+
+public class RegisterRequest
 {
-    public class RegisterRequest
-    {
-        public string FirstName { get; set; }
+    [Required]
+    public string FirstName { get; set; }
 
-        public string LastName { get; set; }
+    [Required]
+    public string LastName { get; set; }
 
-        public string Email { get; set; }
+    [Required, EmailAddress]
+    public string Email { get; set; }
 
-        public string Password { get; set; }
+    [Required]
+    public string Password { get; set; }
 
-        public string Phone { get; set; }
+    public string Phone { get; set; }
 
-        public string Mobile { get; set; }
+    public string Mobile { get; set; }
 
-        public string Address { get; set; }
+    public string Address { get; set; }
 
-        public string Details { get; set; }
-    }
+    public string Details { get; set; }
 }
