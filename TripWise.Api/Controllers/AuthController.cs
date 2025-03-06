@@ -36,14 +36,6 @@ namespace TripWise.Api.Controllers
                 return BadRequest(new { code = "InvalidEmail", description = "Email is required." });
             }
 
-            try
-            {
-                var emailAddress = new System.Net.Mail.MailAddress(request.Email);
-            }
-            catch
-            {
-                return BadRequest(new { code = "InvalidEmail", description = "Email is invalid." });
-            }
             var user = new Customer
             {
                 UserName = request.Email.ToLower(),
@@ -57,6 +49,8 @@ namespace TripWise.Api.Controllers
                 CustomerFrom = DateTime.UtcNow
             };
 
+            var passwordHasher = new PasswordHasher<Customer>();
+            user.PasswordHash = passwordHasher.HashPassword(user, request.Password);
             var result = await _userManager.CreateAsync(user, request.Password);
             if (!result.Succeeded)
             {
@@ -76,10 +70,8 @@ namespace TripWise.Api.Controllers
 
             Console.WriteLine($"✅ User Registered: {user.Email}");
 
-            // 🔹 Return 201 Created with `CreatedAtAction`
             return CreatedAtAction(nameof(GetUser), new { id = user.Id }, new { Message = "User registered successfully.", User = user });
         }
-
         [HttpPost("login")]
         public async Task<IActionResult> Login([FromBody] LoginRequest request)
         {
@@ -93,6 +85,9 @@ namespace TripWise.Api.Controllers
                 return Unauthorized(new { Message = "Invalid credentials." });
             }
 
+            // Debugging: Log stored password hash
+            Console.WriteLine($"🔹 Stored Password Hash: {user.PasswordHash}");
+
             var isValidPassword = await _userManager.CheckPasswordAsync(user, request.Password);
             if (!isValidPassword)
             {
@@ -100,11 +95,28 @@ namespace TripWise.Api.Controllers
                 return Unauthorized(new { Message = "Invalid credentials." });
             }
 
-            var token = GenerateJwtToken(user);
+            var roles = await _userManager.GetRolesAsync(user);
+            var token = GenerateJwtToken(user, roles);
             Console.WriteLine($"✅ User Logged In: {user.Email}");
 
-            return Ok(new { Token = token, UserId = user.Id, Name = user.FirstName + " " + user.LastName });
+            return Ok(new { Token = token, UserId = user.Id, Name = user.FirstName + " " + user.LastName, Roles = roles });
         }
+
+        [HttpPost("reset-password")]
+        public async Task<IActionResult> ResetPassword(string email, string newPassword)
+        {
+            var user = await _userManager.FindByEmailAsync(email);
+            if (user == null) return NotFound("User not found.");
+
+            var token = await _userManager.GeneratePasswordResetTokenAsync(user);
+            var resetResult = await _userManager.ResetPasswordAsync(user, token, newPassword);
+
+            if (resetResult.Succeeded)
+                return Ok("Password reset successfully.");
+            else
+                return BadRequest(resetResult.Errors);
+        }
+
 
         [HttpGet("{id}")]
         public async Task<IActionResult> GetUser(int id)
@@ -117,7 +129,7 @@ namespace TripWise.Api.Controllers
             return Ok(user);
         }
 
-        private string GenerateJwtToken(Customer user)
+        private string GenerateJwtToken(Customer user, IList<string> roles)
         {
             var key = Encoding.UTF8.GetBytes(_config["Jwt:Key"]);
             var claims = new List<Claim>
@@ -127,7 +139,6 @@ namespace TripWise.Api.Controllers
                 new Claim(ClaimTypes.Email, user.Email)
             };
 
-            var roles = _userManager.GetRolesAsync(user).Result;
             foreach (var role in roles)
             {
                 claims.Add(new Claim(ClaimTypes.Role, role));

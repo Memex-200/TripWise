@@ -22,7 +22,7 @@ namespace TripWise.Domain.Entities
         public string Address { get; set; }
 
         [StringLength(100)]
-        [EmailAddress]
+     
         public string Email { get; set; }
 
         public string Details { get; set; }

@@ -42,7 +42,7 @@ try
     builder.Services.AddIdentity<Customer, IdentityRole<int>>(options =>
     {
 
-        options.User.RequireUniqueEmail = true;
+        options.User.RequireUniqueEmail = false;
         options.Password.RequireDigit = true;
         options.Password.RequiredLength = 6;
         options.Password.RequireNonAlphanumeric = false;
