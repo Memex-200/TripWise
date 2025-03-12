@@ -11,7 +11,7 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TripWise.Application", "Tri
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TripWise.Infrastructure", "TripWise.Infrastructure\TripWise.Infrastructure.csproj", "{3DB4AF8C-7DDC-4842-8672-082584CC00FB}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TripWise.Persistence", "TripWise.Persistence\TripWise.Persistence.csproj", "{E88FDE29-6558-436A-945F-6BFED23897F0}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TripWise.EntityFrameworkCore", "TripWise.Persistence\TripWise.EntityFrameworkCore.csproj", "{E88FDE29-6558-436A-945F-6BFED23897F0}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

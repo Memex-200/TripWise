@@ -13,7 +13,7 @@
   <ItemGroup>
     <ProjectReference Include="..\TripWise.Application\TripWise.Application.csproj" />
     <ProjectReference Include="..\TripWise.Domain\TripWise.Domain.csproj" />
-    <ProjectReference Include="..\TripWise.Persistence\TripWise.Persistence.csproj" />
+    <ProjectReference Include="..\TripWise.Persistence\TripWise.EntityFrameworkCore.csproj" />
   </ItemGroup>
 
 </Project>
