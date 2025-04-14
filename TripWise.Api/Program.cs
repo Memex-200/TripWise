@@ -3,6 +3,7 @@ using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
 using System.Text;
+using TripWise.Api.Properties;
 using TripWise.Application.Interfaces.Repositories;
 using TripWise.Application.Interfaces.Services;
 using TripWise.Domain.Entities;
@@ -31,12 +32,19 @@ try
     }
 
     // ✅ Configure Database Context (SQL Server)
+    /*
     builder.Services.AddDbContext<ApplicationDbContext>(options =>
         options.UseSqlServer(
             configuration.GetConnectionString("DefaultConnection"),
             sqlOptions => sqlOptions.MigrationsAssembly(typeof(ApplicationDbContext).Assembly.FullName) // Ensure migrations are linked
         )
-    );
+    ); 
+    */
+    builder.Services.AddDbContext<ApplicationDbContext>(options =>
+    options.UseSqlServer(
+        configuration.GetConnectionString("DefaultConnection"),
+        sqlOptions => sqlOptions.MigrationsAssembly("TripWise.Api") // Your API project name
+    ));
 
     // ✅ Configure Identity (Using Customer as the User)
     builder.Services.AddIdentity<Customer, IdentityRole<int>>(options =>
@@ -135,11 +143,11 @@ try
     });
 
     // ✅ Enable Swagger (For Development Mode)
-    if (app.Environment.IsDevelopment())
-    {
+   // if (app.Environment.IsDevelopment())
+   
         app.UseSwagger();
         app.UseSwaggerUI();
-    }
+   
 
     app.UseHttpsRedirection();
 
@@ -156,6 +164,9 @@ try
     // ✅ Start the Application
     Console.WriteLine("✅ Application Started Successfully.");
     app.Run();
+
+
+    builder.Services.Configure<CloudinarySettings>(builder.Configuration.GetSection(nameof(CloudinarySettings)));
 }
 catch (Exception ex)
 {

@@ -24,6 +24,8 @@ namespace TripWise.Domain.Entities
 
         public bool Active { get; set; }
 
+        public string Image { get; set; }
+
         public int CityId { get; set; }
 
         public int CompanyTypeId { get; set; }

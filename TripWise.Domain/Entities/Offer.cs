@@ -26,6 +26,8 @@ namespace TripWise.Domain.Entities
 
         public bool Accepted { get; set; }
 
+        public string Image { get; set; }
+
         public int? PromoOfferId { get; set; }
 
         public int AgentId { get; set; }
