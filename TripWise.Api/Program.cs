@@ -2,8 +2,9 @@
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
+using Microsoft.OpenApi.Models;
 using System.Text;
-using TripWise.Api.Properties;
+//using TripWise.Api.Properties;
 using TripWise.Application.Interfaces.Repositories;
 using TripWise.Application.Interfaces.Services;
 using TripWise.Domain.Entities;
@@ -60,6 +61,7 @@ try
     .AddDefaultTokenProviders();
 
     // ✅ Configure JWT Authentication
+
     var key = Encoding.UTF8.GetBytes(jwtSettings["Key"]);
     builder.Services.AddAuthentication(options =>
     {
@@ -83,8 +85,44 @@ try
         };
     });
 
+
     // ✅ Configure Authorization
     builder.Services.AddAuthorization();
+
+    /**************************************************************/
+    /*************************************************************/
+    builder.Services.AddSwaggerGen(c =>
+    {
+        c.SwaggerDoc("v1", new OpenApiInfo { Title = "DigiCrafterz", Version = "v1" });
+
+        c.AddSecurityDefinition(JwtBearerDefaults.AuthenticationScheme, new OpenApiSecurityScheme
+        {
+            Description = "JWT Authorization header using the Bearer scheme (Example: 'Bearer 12345abcdef')",
+            Name = "Authorization",
+            In = ParameterLocation.Header,
+            Type = SecuritySchemeType.ApiKey,
+            Scheme = JwtBearerDefaults.AuthenticationScheme
+        });
+
+        c.AddSecurityRequirement(new OpenApiSecurityRequirement
+{
+    {
+        new OpenApiSecurityScheme
+        {
+            Reference = new OpenApiReference
+            {
+                Type = ReferenceType.SecurityScheme,
+                Id = JwtBearerDefaults.AuthenticationScheme
+            }
+        },
+        Array.Empty<string>()
+    }
+});
+    });
+
+    /*********************************************************/
+
+
 
     // ✅ Register Repositories (Dependency Injection)
     builder.Services.AddScoped<ITransportCompanyRepository, TransportCompanyRepository>();
@@ -143,11 +181,11 @@ try
     });
 
     // ✅ Enable Swagger (For Development Mode)
-   // if (app.Environment.IsDevelopment())
-   
-        app.UseSwagger();
-        app.UseSwaggerUI();
-   
+    // if (app.Environment.IsDevelopment())
+
+    app.UseSwagger();
+    app.UseSwaggerUI();
+
 
     app.UseHttpsRedirection();
 
@@ -165,8 +203,6 @@ try
     Console.WriteLine("✅ Application Started Successfully.");
     app.Run();
 
-
-    builder.Services.Configure<CloudinarySettings>(builder.Configuration.GetSection(nameof(CloudinarySettings)));
 }
 catch (Exception ex)
 {

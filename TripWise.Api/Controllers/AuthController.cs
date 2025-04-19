@@ -32,7 +32,7 @@ namespace TripWise.Api.Controllers
         }
 
         #region Registration
-
+        
         [HttpPost("register")]
         public async Task<IActionResult> Register([FromBody] RegisterRequest request)
         {
@@ -59,26 +59,7 @@ namespace TripWise.Api.Controllers
 
             // Let UserManager handle password hashing automatically
             var result = await _userManager.CreateAsync(user, request.Password);
-
-            /*
-             * 
-             * var user = new Customer
-                    {
-                        UserName = request.Email.ToLower(),
-                        Email = request.Email.ToLower(),
-                        FirstName = request.FirstName,
-                        LastName = request.LastName,
-                        Phone = request.Phone,
-                        Mobile = request.Mobile,
-                        Address = request.Address,
-                        Details = request.Details ?? "New User",
-                        CustomerFrom = DateTime.UtcNow
-                    };
-
-                        // Save user WITHOUT setting NormalizedEmail manually
-                        var result = await _userManager.CreateAsync(user, request.Password);
-
-             * */
+ 
             if (!result.Succeeded)
             {
                 foreach (var error in result.Errors)
@@ -106,11 +87,11 @@ namespace TripWise.Api.Controllers
                     user.Id,
                     user.Email,
                     user.FirstName,
-                    user.LastName
-                }
+                    user.LastName,
+                 }
             });
         }
-
+               
         #endregion
 
         #region Login
@@ -155,18 +136,27 @@ namespace TripWise.Api.Controllers
         }
 
         #endregion
-
+ 
+        
         #region Password Reset
 
         [HttpPost("reset-password")]
         public async Task<IActionResult> ResetPassword([FromBody] ResetPasswordRequest request)
         {
-            if (string.IsNullOrWhiteSpace(request.Email) || string.IsNullOrWhiteSpace(request.NewPassword) || string.IsNullOrWhiteSpace(request.Token))
+            if (string.IsNullOrWhiteSpace(request.Email) ||
+                string.IsNullOrWhiteSpace(request.NewPassword) ||
+                string.IsNullOrWhiteSpace(request.Token))
             {
                 return BadRequest(new { Message = "Email, token, and new password are required." });
             }
 
-            var user = await _userManager.FindByEmailAsync(request.Email);
+            // Normalize email to match NormalizedUserName format
+            var normalizedUserName = _userManager.NormalizeEmail(request.Email);
+
+            // Find user by NormalizedUserName where emails are actually stored
+            var user = await _userManager.Users
+                .FirstOrDefaultAsync(u => u.NormalizedUserName == normalizedUserName);
+
             if (user == null)
             {
                 return NotFound(new { Message = "User not found." });
@@ -176,16 +166,20 @@ namespace TripWise.Api.Controllers
 
             if (!resetResult.Succeeded)
             {
-                return BadRequest(resetResult.Errors);
+                return BadRequest(new
+                {
+                    Message = "Password reset failed",
+                    Errors = resetResult.Errors.Select(e => e.Description)
+                });
             }
 
             return Ok(new { Message = "Password reset successfully." });
         }
 
-
         #endregion
 
-        #region Forget Password
+        #region Forgot Password
+
         [HttpPost("forgot-password")]
         public async Task<IActionResult> ForgotPassword([FromBody] ForgotPasswordRequest request)
         {
@@ -194,23 +188,30 @@ namespace TripWise.Api.Controllers
                 return BadRequest(new { Message = "Email is required." });
             }
 
-            // Normalize the email before searching
-            string normalizedEmail = _userManager.NormalizeEmail(request.Email);
+            // Normalize to uppercase to match NormalizedUserName column
+            var normalizedUserName = request.Email.Trim().ToUpperInvariant();
 
-            // Search using NormalizedEmail instead of FindByEmailAsync
-            var user = await _userManager.Users.FirstOrDefaultAsync(u => u.NormalizedEmail == normalizedEmail);
+            // Query against NormalizedUserName column
+            var user = await _userManager.Users
+                .FirstOrDefaultAsync(u => u.NormalizedUserName == normalizedUserName);
 
+            // Security: Always return 200 to prevent email enumeration
             if (user == null)
             {
-                return NotFound(new { Message = "User not found." });
+                return Ok(new { Message = "If the email exists, a reset link has been sent." });
             }
 
             var token = await _userManager.GeneratePasswordResetTokenAsync(user);
 
-            return Ok(new { Message = "Reset password token generated.", Token = token });
+            // TEMPORARY TESTING RESPONSE - REMOVE IN PRODUCTION
+            return Ok(new
+            {
+                Message = "Password reset token (TEST MODE)",
+                Token = token,
+                Email = user.Email,
+                NormalizedUserName = user.NormalizedUserName
+            });
         }
-
-
 
         #endregion
 
@@ -246,10 +247,17 @@ namespace TripWise.Api.Controllers
         [HttpPost("logout")]
         public IActionResult Logout()
         {
-            // Since JWT tokens are stateless, logging out is simply a client-side action.
-            // Instruct the client to delete the token locally (from localStorage or cookies).
+            // Check if the user is authenticated
+            if (!User.Identity.IsAuthenticated)
+            {
+                return BadRequest(new { Message = "No user was logged in." });
+            }
 
+            // Logout logic for authenticated users
             Console.WriteLine("✅ User logged out.");
+
+            // Since JWT is stateless, actual token invalidation would require additional strategies
+            // (e.g., token blacklisting or short token expiration). Client should delete the token.
 
             return Ok(new { Message = "Logged out successfully." });
         }
