@@ -1,31 +1,43 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using TripWise.Domain.Entities;
 
-namespace TripWise.Persistence
+namespace TripWise.Persistence.Entity_sConfigurations
 {
     public class OfferConfiguration : IEntityTypeConfiguration<Offer>
     {
         public void Configure(EntityTypeBuilder<Offer> builder)
         {
-            //builder.HasKey(o => o.OfferCode);
-            //builder.Property(o => o.OfferName).IsRequired().HasMaxLength(100);
-            //builder.Property(o => o.Accepted).HasDefaultValue(false);
+            builder.HasKey(o => o.OfferId);
+
+            builder.Property(o => o.OfferName).IsRequired().HasMaxLength(100);
+            builder.Property(o => o.Description).HasMaxLength(255);
+            builder.Property(o => o.IsAccepted).HasDefaultValue(false);
 
             //builder.HasOne(o => o.Agent)
             //       .WithMany(a => a.Offers)
-            //       .HasForeignKey(o => o.AgentId);
+            //       .HasForeignKey(o => o.AgentId)
+            //       .OnDelete(DeleteBehavior.NoAction);
 
             builder.HasOne(o => o.Customer)
                    .WithMany(c => c.Offers)
-                   .HasForeignKey(o => o.CustomerId);
+                   .HasForeignKey(o => o.CustomerId)
+                   .OnDelete(DeleteBehavior.NoAction);
+
+            builder.HasOne(o => o.TransportCompany)
+                   .WithMany(tc => tc.Offers)
+                   .HasForeignKey(o => o.TransportCompanyId)
+                   .OnDelete(DeleteBehavior.NoAction);
+
+            builder.HasOne(o => o.HotelService)
+                   .WithMany(hs => hs.Offers)
+                   .HasForeignKey(o => o.HotelServiceId)
+                   .OnDelete(DeleteBehavior.NoAction);
+
+            builder.HasOne(o => o.PromoOffer)
+                   .WithMany(po => po.Offers)
+                   .HasForeignKey(o => o.PromoOfferId)
+                   .OnDelete(DeleteBehavior.NoAction);
         }
     }
-
-
 }

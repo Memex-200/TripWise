@@ -1,8 +1,5 @@
 ﻿using Microsoft.EntityFrameworkCore;
-using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 using System.Threading.Tasks;
 using TripWise.Application.Interfaces.Repositories;
 using TripWise.Domain.Entities;
@@ -20,9 +17,23 @@ namespace TripWise.Infrastructure.Repositories
         }
 
         public async Task<IEnumerable<Hotel>> GetAllHotelsAsync()
-            => await _context.Hotels.ToListAsync();
+        {
+            return await _context.Hotels
+                .Include(h => h.City)
+                    .ThenInclude(c => c.Country)
+                .Include(h => h.HotelServices)
+                    .ThenInclude(hs => hs.RoomType)
+                .ToListAsync();
+        }
 
         public async Task<Hotel> GetHotelByIdAsync(int id)
-            => await _context.Hotels.FindAsync(id);
+        {
+            return await _context.Hotels
+                .Include(h => h.City)
+                    .ThenInclude(c => c.Country)
+                .Include(h => h.HotelServices)
+                    .ThenInclude(hs => hs.RoomType)
+                .FirstOrDefaultAsync(h => h.HotelId == id);
+        }
     }
 }

@@ -8,31 +8,31 @@ namespace TripWise.Domain.Entities
     public class Offer
     {
         [Key]
-        public int OfferId { get; set; } // Renamed to OfferId for consistency
+        public int OfferId { get; set; } 
 
         [Required, StringLength(100)]
         public string OfferName { get; set; }
 
-        public string Description { get; set; } // Added to match schema
+        public string Description { get; set; } 
 
-        public DateTime Created { get; set; } // Renamed to match schema
+        public DateTime Created { get; set; } 
 
         public DateTime ActiveFrom { get; set; }
 
-        public bool ActiveTo { get; set; } // Changed to bool to match schema
+        public DateTime ActiveTo { get; set; } 
 
         public DateTime? TimeAccepted { get; set; }
 
-        public bool IsAccepted { get; set; } // Renamed to match schema
+        public bool IsAccepted { get; set; } 
 
         [NotMapped]
-        public string Image { get; set; } // Marked as NotMapped
+        public string Image { get; set; } 
 
         [ForeignKey("HotelService")]
-        public int HotelServiceId { get; set; } // Added to match schema
+        public int HotelServiceId { get; set; } 
 
         [ForeignKey("TransportCompany")]
-        public int TransportCompanyId { get; set; } // Added to match schema
+        public int TransportCompanyId { get; set; } 
 
         [ForeignKey("PromoOffer")]
         public int? PromoOfferId { get; set; }
@@ -40,9 +40,9 @@ namespace TripWise.Domain.Entities
         [ForeignKey("Customer")]
         public int CustomerId { get; set; }
 
-        public virtual HotelService HotelService { get; set; } // Added for one-to-one relationship
+        public virtual HotelService HotelService { get; set; } 
 
-        public virtual TransportCompany TransportCompany { get; set; } // Added for one-to-one relationship
+        public virtual TransportCompany TransportCompany { get; set; } 
 
         public virtual Customer Customer { get; set; }
 
@@ -50,7 +50,6 @@ namespace TripWise.Domain.Entities
 
         public virtual ICollection<Contract> Contracts { get; set; }
 
-        [NotMapped]
-        public object HotelServices { get; internal set; }
+       
     }
 }

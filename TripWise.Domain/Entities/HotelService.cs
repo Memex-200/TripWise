@@ -25,5 +25,5 @@ public class HotelService
 
     public virtual ICollection<PromoOfferHotelService> PromoOffers { get; set; }
 
-    public virtual ICollection<Offer> Offers { get; set; } // One-to-many: HotelService can be part of many Offers
+    public virtual ICollection<Offer> Offers { get; set; }
 }

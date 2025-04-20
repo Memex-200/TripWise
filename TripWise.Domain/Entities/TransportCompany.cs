@@ -33,7 +33,7 @@ public class TransportCompany
 
     public virtual CompanyType CompanyType { get; set; }
 
-    public virtual ICollection<Offer> Offers { get; set; } // One-to-many: TransportCompany can be part of many Offers
+    public virtual ICollection<Offer> Offers { get; set; }
 
     public virtual ICollection<TransportService> TransportServices { get; set; }
 }

@@ -7,7 +7,7 @@ namespace TripWise.Api.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
-    [Authorize] // 🔒 Requires authentication
+    [Authorize]
     public class TransportCompaniesController : ControllerBase
     {
         private readonly ITransportCompanyService _companyService;
@@ -19,6 +19,17 @@ namespace TripWise.Api.Controllers
 
         [HttpGet]
         public async Task<IActionResult> GetAllCompanies()
-            => Ok(await _companyService.GetAllCompaniesAsync());
+        {
+            try
+            {
+                var companies = await _companyService.GetAllCompaniesAsync();
+                return Ok(companies);
+            }
+            catch (Exception ex)
+            {
+                // Log the exception
+                return StatusCode(500, $"An error occurred: {ex.Message}");
+            }
+        }
     }
 }

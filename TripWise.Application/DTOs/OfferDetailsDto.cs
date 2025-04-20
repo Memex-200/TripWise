@@ -7,7 +7,7 @@
         public string Description { get; set; }
         public DateTime Created { get; set; }
         public DateTime ActiveFrom { get; set; }
-        public bool ActiveTo { get; set; }
+        public DateTime ActiveTo { get; set; }
         public DateTime? TimeAccepted { get; set; }
         public bool IsAccepted { get; set; }
 
