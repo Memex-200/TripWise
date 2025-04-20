@@ -28,6 +28,9 @@ namespace TripWise.Domain.Entities
 
         public virtual ICollection<PromoOfferTransportService> PromoOfferTransportServices { get; set; }
 
+        public virtual Offer Offer { get; set; }
+
+
         [NotMapped]
         public object TransportService { get; internal set; }
     }

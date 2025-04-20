@@ -13,13 +13,13 @@ namespace TripWise.Persistence
     {
         public void Configure(EntityTypeBuilder<Offer> builder)
         {
-            builder.HasKey(o => o.OfferCode);
-            builder.Property(o => o.OfferName).IsRequired().HasMaxLength(100);
-            builder.Property(o => o.Accepted).HasDefaultValue(false);
+            //builder.HasKey(o => o.OfferCode);
+            //builder.Property(o => o.OfferName).IsRequired().HasMaxLength(100);
+            //builder.Property(o => o.Accepted).HasDefaultValue(false);
 
-            builder.HasOne(o => o.Agent)
-                   .WithMany(a => a.Offers)
-                   .HasForeignKey(o => o.AgentId);
+            //builder.HasOne(o => o.Agent)
+            //       .WithMany(a => a.Offers)
+            //       .HasForeignKey(o => o.AgentId);
 
             builder.HasOne(o => o.Customer)
                    .WithMany(c => c.Offers)

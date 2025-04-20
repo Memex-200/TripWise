@@ -1,22 +1,15 @@
-﻿using System;
-using System.Collections.Generic;
-using System.ComponentModel.DataAnnotations;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using System.ComponentModel.DataAnnotations;
 
 namespace TripWise.Domain.Entities
 {
     public class Country
     {
         [Key]
-        [StringLength(3)]
-
-        public string CountryCode { get; set; }
+        public int CountryId { get; set; }  // Renamed to match schema (country_id)
 
         [Required, StringLength(100)]
         public string CountryName { get; set; }
 
-        public ICollection<City> Cities { get; set; }
+        public virtual ICollection<City> Cities { get; set; }
     }
 }

@@ -28,7 +28,7 @@ namespace TripWise.Persistence.Entity_sConfigurations
                    .HasMaxLength(255);
 
             builder.Property(c => c.Mobile)
-                   .HasMaxLength(255);
+                  .HasMaxLength(255);
 
             builder.Property(c => c.CustomerFrom)
                    .HasDefaultValueSql("GETUTCDATE()"); // ✅ Default value for date

@@ -136,8 +136,44 @@ namespace TripWise.Api.Controllers
         }
 
         #endregion
- 
-        
+
+        #region Forgot Password
+
+        [HttpPost("forgot-password")]
+        public async Task<IActionResult> ForgotPassword([FromBody] ForgotPasswordRequest request)
+        {
+            if (string.IsNullOrWhiteSpace(request.Email))
+            {
+                return BadRequest(new { Message = "Email is required." });
+            }
+
+            // Normalize to uppercase to match NormalizedUserName column
+            var normalizedUserName = request.Email.Trim().ToUpperInvariant();
+
+            // Query against NormalizedUserName column
+            var user = await _userManager.Users
+                .FirstOrDefaultAsync(u => u.NormalizedUserName == normalizedUserName);
+
+            // Security: Always return 200 to prevent email enumeration
+            if (user == null)
+            {
+                return Ok(new { Message = "If the email exists, a reset link has been sent." });
+            }
+
+            var token = await _userManager.GeneratePasswordResetTokenAsync(user);
+
+            // TEMPORARY TESTING RESPONSE - REMOVE IN PRODUCTION
+            return Ok(new
+            {
+                Message = "Password reset token (TEST MODE)",
+                Token = token,
+                Email = user.Email,
+                NormalizedUserName = user.NormalizedUserName
+            });
+        }
+
+        #endregion
+
         #region Password Reset
 
         [HttpPost("reset-password")]
@@ -178,42 +214,6 @@ namespace TripWise.Api.Controllers
 
         #endregion
 
-        #region Forgot Password
-
-        [HttpPost("forgot-password")]
-        public async Task<IActionResult> ForgotPassword([FromBody] ForgotPasswordRequest request)
-        {
-            if (string.IsNullOrWhiteSpace(request.Email))
-            {
-                return BadRequest(new { Message = "Email is required." });
-            }
-
-            // Normalize to uppercase to match NormalizedUserName column
-            var normalizedUserName = request.Email.Trim().ToUpperInvariant();
-
-            // Query against NormalizedUserName column
-            var user = await _userManager.Users
-                .FirstOrDefaultAsync(u => u.NormalizedUserName == normalizedUserName);
-
-            // Security: Always return 200 to prevent email enumeration
-            if (user == null)
-            {
-                return Ok(new { Message = "If the email exists, a reset link has been sent." });
-            }
-
-            var token = await _userManager.GeneratePasswordResetTokenAsync(user);
-
-            // TEMPORARY TESTING RESPONSE - REMOVE IN PRODUCTION
-            return Ok(new
-            {
-                Message = "Password reset token (TEST MODE)",
-                Token = token,
-                Email = user.Email,
-                NormalizedUserName = user.NormalizedUserName
-            });
-        }
-
-        #endregion
 
         #region Get User
 
@@ -233,7 +233,7 @@ namespace TripWise.Api.Controllers
                 user.FirstName,
                 user.LastName,
                 user.Phone,
-                user.Mobile,
+                //user.Mobile,
                 user.Address,
                 user.Details,
                 user.CustomerFrom

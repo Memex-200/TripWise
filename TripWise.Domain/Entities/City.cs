@@ -1,13 +1,7 @@
-﻿using System;
-using System.Collections.Generic;
-using System.ComponentModel.DataAnnotations;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using System.ComponentModel.DataAnnotations;
 
 namespace TripWise.Domain.Entities
 {
-
     public class City
     {
         [Key]
@@ -16,8 +10,7 @@ namespace TripWise.Domain.Entities
         [Required, StringLength(100)]
         public string CityName { get; set; }
 
-        [Required, StringLength(3)]
-        public string CountryCode { get; set; }
+        public int CountryId { get; set; }  // Changed to int and renamed to match schema (country_id)
 
         public virtual Country Country { get; set; }
 

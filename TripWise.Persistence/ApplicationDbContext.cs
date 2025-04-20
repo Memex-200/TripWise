@@ -8,13 +8,12 @@ namespace TripWise.Persistence
 {
     public class ApplicationDbContext : IdentityDbContext<Customer, IdentityRole<int>, int>
     {
-        // Constructor that accepts DbContextOptions and passes it to the base class
         public ApplicationDbContext(DbContextOptions<ApplicationDbContext> options)
            : base(options)
         {
         }
 
-        // ✅ Define DbSets for your application
+        // Define DbSets
         public DbSet<Country> Countries { get; set; }
         public DbSet<City> Cities { get; set; }
         public DbSet<Hotel> Hotels { get; set; }
@@ -24,21 +23,18 @@ namespace TripWise.Persistence
         public DbSet<TransportCompany> TransportCompanies { get; set; }
         public DbSet<TicketType> TicketTypes { get; set; }
         public DbSet<TransportService> TransportServices { get; set; }
-        public DbSet<Agent> Agents { get; set; }
         public DbSet<PromoOffer> PromoOffers { get; set; }
         public DbSet<Offer> Offers { get; set; }
         public DbSet<Contract> Contracts { get; set; }
         public DbSet<PromoOfferTransportService> PromoOfferTransportServices { get; set; }
         public DbSet<PromoOfferHotelService> PromoOfferHotelServices { get; set; }
-        public DbSet<OfferTransportService> OfferTransportServices { get; set; }
-        public DbSet<OfferHotelService> OfferHotelServices { get; set; }
+        // Removed OfferHotelService and OfferTransportService to align with one-to-one relationships
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
-            // ✅ Apply Identity configurations
             base.OnModelCreating(modelBuilder);
 
-            // ✅ Apply entity-specific configurations
+            // Apply entity-specific configurations
             modelBuilder.ApplyConfiguration(new CountryConfiguration());
             modelBuilder.ApplyConfiguration(new CityConfiguration());
             modelBuilder.ApplyConfiguration(new HotelConfiguration());
@@ -50,7 +46,80 @@ namespace TripWise.Persistence
             modelBuilder.ApplyConfiguration(new OfferConfiguration());
             modelBuilder.ApplyConfiguration(new ContractConfiguration());
 
-            // ✅ Customize Identity Table Names (Optional)
+            // Configure relationships for entities without configurations
+            // RoomType
+            modelBuilder.Entity<RoomType>()
+                .HasKey(rt => rt.RoomTypeId);
+
+            modelBuilder.Entity<HotelService>()
+                .HasOne(hs => hs.RoomType)
+                .WithMany()
+                .HasForeignKey(hs => hs.RoomTypeId);
+
+            // CompanyType
+            modelBuilder.Entity<CompanyType>()
+                .HasKey(ct => ct.CompanyTypeId);
+
+            modelBuilder.Entity<TransportCompany>()
+                .HasOne(tc => tc.CompanyType)
+                .WithMany()
+                .HasForeignKey(tc => tc.CompanyTypeId);
+
+            // TicketType
+            modelBuilder.Entity<TicketType>()
+                .HasKey(tt => tt.TicketTypeId);
+
+            modelBuilder.Entity<TransportService>()
+                .HasOne(ts => ts.TicketType)
+                .WithMany()
+                .HasForeignKey(ts => ts.TicketTypeId);
+
+            // PromoOffer
+            modelBuilder.Entity<PromoOffer>()
+                .HasKey(po => po.PromoOfferCode);
+
+            modelBuilder.Entity<Offer>()
+                .HasOne(o => o.PromoOffer)
+                .WithMany(po => po.Offers)
+                .HasForeignKey(o => o.PromoOfferId);
+
+            // Additional relationships
+            modelBuilder.Entity<Offer>()
+                .HasOne(o => o.TransportCompany)
+                .WithMany(tc => tc.Offers)
+                .HasForeignKey(o => o.TransportCompanyId);
+
+            modelBuilder.Entity<Offer>()
+                .HasOne(o => o.HotelService)
+                .WithMany(hs => hs.Offers)
+                .HasForeignKey(o => o.HotelServiceId);
+
+            modelBuilder.Entity<Offer>()
+                .HasOne(o => o.Customer)
+                .WithMany(c => c.Offers)
+                .HasForeignKey(o => o.CustomerId);
+
+            modelBuilder.Entity<HotelService>()
+                .HasOne(hs => hs.Hotel)
+                .WithMany()
+                .HasForeignKey(hs => hs.HotelId);
+
+            modelBuilder.Entity<Hotel>()
+                .HasOne(h => h.City)
+                .WithMany()
+                .HasForeignKey(h => h.CityId);
+
+            modelBuilder.Entity<City>()
+        .HasOne(c => c.Country)
+        .WithMany(co => co.Cities)
+        .HasForeignKey(c => c.CountryId);
+
+            modelBuilder.Entity<TransportCompany>()
+                .HasOne(tc => tc.City)
+                .WithMany()
+                .HasForeignKey(tc => tc.CityId);
+
+            // Customize Identity Table Names
             modelBuilder.Entity<Customer>().ToTable("AspNetUsers");
             modelBuilder.Entity<IdentityRole<int>>().ToTable("AspNetRoles");
             modelBuilder.Entity<IdentityUserRole<int>>().ToTable("AspNetUserRoles");
