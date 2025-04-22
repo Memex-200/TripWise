@@ -7,7 +7,7 @@ using System.Text;
 using System.Threading.Tasks;
 using TripWise.Domain.Entities;
 
-namespace TripWise.Persistence
+namespace TripWise.EntityFrameworkCore
 {
     public class ContractConfiguration : IEntityTypeConfiguration<Contract>
     {

@@ -2,7 +2,7 @@
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
 using TripWise.Domain.Entities;
 
-namespace TripWise.Persistence.Entity_sConfigurations
+namespace TripWise.EntityFrameworkCore.EntitiesConfigurations
 {
     public class CountryConfiguration : IEntityTypeConfiguration<Country>
     {

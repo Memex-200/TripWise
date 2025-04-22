@@ -8,9 +8,10 @@ using System.Text;
 using TripWise.Application.Interfaces.Repositories;
 using TripWise.Application.Interfaces.Services;
 using TripWise.Domain.Entities;
+using TripWise.EntityFrameworkCore;
 using TripWise.Infrastructure.Repositories;
 using TripWise.Infrastructure.Services;
-using TripWise.Persistence;
+
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -44,7 +45,7 @@ try
     builder.Services.AddDbContext<ApplicationDbContext>(options =>
     options.UseSqlServer(
         configuration.GetConnectionString("DefaultConnection"),
-        sqlOptions => sqlOptions.MigrationsAssembly("TripWise.Api") // Your API project name
+        sqlOptions => sqlOptions.MigrationsAssembly("TripWise.EntityFrameworkCore") // Your API project name
     ));
 
     // ✅ Configure Identity (Using Customer as the User)
@@ -93,7 +94,7 @@ try
     /*************************************************************/
     builder.Services.AddSwaggerGen(c =>
     {
-        c.SwaggerDoc("v1", new OpenApiInfo { Title = "DigiCrafterz", Version = "v1" });
+        c.SwaggerDoc("v1", new OpenApiInfo { Title = "TripWise", Version = "v1" });
 
         c.AddSecurityDefinition(JwtBearerDefaults.AuthenticationScheme, new OpenApiSecurityScheme
         {

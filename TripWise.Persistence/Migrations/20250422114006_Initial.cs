@@ -3,16 +3,16 @@ using Microsoft.EntityFrameworkCore.Migrations;
 
 #nullable disable
 
-namespace TripWise.Persistence.Migrations
+namespace TripWise.EntityFrameworkCore.Migrations
 {
     /// <inheritdoc />
-    public partial class InitialCreate : Migration
+    public partial class Initial : Migration
     {
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
         {
             migrationBuilder.CreateTable(
-                name: "Agents",
+                name: "Agent",
                 columns: table => new
                 {
                     AgentCode = table.Column<int>(type: "int", nullable: false)
@@ -23,7 +23,7 @@ namespace TripWise.Persistence.Migrations
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_Agents", x => x.AgentCode);
+                    table.PrimaryKey("PK_Agent", x => x.AgentCode);
                 });
 
             migrationBuilder.CreateTable(
@@ -50,11 +50,11 @@ namespace TripWise.Persistence.Migrations
                     FirstName = table.Column<string>(type: "nvarchar(100)", maxLength: 100, nullable: false),
                     LastName = table.Column<string>(type: "nvarchar(100)", maxLength: 100, nullable: false),
                     Address = table.Column<string>(type: "nvarchar(255)", maxLength: 255, nullable: false),
-                    Email = table.Column<string>(type: "nvarchar(256)", maxLength: 256, nullable: false),
+                    Email = table.Column<string>(type: "nvarchar(100)", maxLength: 100, nullable: false),
                     Details = table.Column<string>(type: "nvarchar(max)", nullable: false),
                     Phone = table.Column<string>(type: "nvarchar(255)", maxLength: 255, nullable: false),
                     Mobile = table.Column<string>(type: "nvarchar(255)", maxLength: 255, nullable: false),
-                    CustomerFrom = table.Column<DateTime>(type: "datetime2", nullable: false),
+                    CustomerFrom = table.Column<DateTime>(type: "datetime2", nullable: false, defaultValueSql: "GETUTCDATE()"),
                     UserName = table.Column<string>(type: "nvarchar(256)", maxLength: 256, nullable: true),
                     NormalizedUserName = table.Column<string>(type: "nvarchar(256)", maxLength: 256, nullable: true),
                     NormalizedEmail = table.Column<string>(type: "nvarchar(256)", maxLength: 256, nullable: true),
@@ -91,12 +91,13 @@ namespace TripWise.Persistence.Migrations
                 name: "Country",
                 columns: table => new
                 {
-                    CountryCode = table.Column<string>(type: "nvarchar(3)", maxLength: 3, nullable: false),
+                    CountryId = table.Column<int>(type: "int", nullable: false)
+                        .Annotation("SqlServer:Identity", "1, 1"),
                     CountryName = table.Column<string>(type: "nvarchar(100)", maxLength: 100, nullable: false)
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_Country", x => x.CountryCode);
+                    table.PrimaryKey("PK_Country", x => x.CountryId);
                 });
 
             migrationBuilder.CreateTable(
@@ -140,9 +141,9 @@ namespace TripWise.Persistence.Migrations
                 {
                     table.PrimaryKey("PK_PromoOffers", x => x.PromoOfferCode);
                     table.ForeignKey(
-                        name: "FK_PromoOffers_Agents_AgentCode",
+                        name: "FK_PromoOffers_Agent_AgentCode",
                         column: x => x.AgentCode,
-                        principalTable: "Agents",
+                        principalTable: "Agent",
                         principalColumn: "AgentCode");
                 });
 
@@ -259,55 +260,17 @@ namespace TripWise.Persistence.Migrations
                     CityId = table.Column<int>(type: "int", nullable: false)
                         .Annotation("SqlServer:Identity", "1, 1"),
                     CityName = table.Column<string>(type: "nvarchar(100)", maxLength: 100, nullable: false),
-                    CountryCode = table.Column<string>(type: "nvarchar(3)", maxLength: 3, nullable: false)
+                    CountryId = table.Column<int>(type: "int", nullable: false)
                 },
                 constraints: table =>
                 {
                     table.PrimaryKey("PK_City", x => x.CityId);
                     table.ForeignKey(
-                        name: "FK_City_Country_CountryCode",
-                        column: x => x.CountryCode,
+                        name: "FK_City_Country_CountryId",
+                        column: x => x.CountryId,
                         principalTable: "Country",
-                        principalColumn: "CountryCode",
+                        principalColumn: "CountryId",
                         onDelete: ReferentialAction.Cascade);
-                });
-
-            migrationBuilder.CreateTable(
-                name: "Offers",
-                columns: table => new
-                {
-                    OfferCode = table.Column<int>(type: "int", nullable: false)
-                        .Annotation("SqlServer:Identity", "1, 1"),
-                    OfferName = table.Column<string>(type: "nvarchar(100)", maxLength: 100, nullable: false),
-                    TimeCreated = table.Column<DateTime>(type: "datetime2", nullable: false),
-                    ActiveFrom = table.Column<DateTime>(type: "datetime2", nullable: false),
-                    ActiveTo = table.Column<DateTime>(type: "datetime2", nullable: false),
-                    TimeAccepted = table.Column<DateTime>(type: "datetime2", nullable: true),
-                    Accepted = table.Column<bool>(type: "bit", nullable: false, defaultValue: false),
-                    PromoOfferId = table.Column<int>(type: "int", nullable: true),
-                    AgentId = table.Column<int>(type: "int", nullable: false),
-                    CustomerId = table.Column<int>(type: "int", nullable: false)
-                },
-                constraints: table =>
-                {
-                    table.PrimaryKey("PK_Offers", x => x.OfferCode);
-                    table.ForeignKey(
-                        name: "FK_Offers_Agents_AgentId",
-                        column: x => x.AgentId,
-                        principalTable: "Agents",
-                        principalColumn: "AgentCode",
-                        onDelete: ReferentialAction.Cascade);
-                    table.ForeignKey(
-                        name: "FK_Offers_AspNetUsers_CustomerId",
-                        column: x => x.CustomerId,
-                        principalTable: "AspNetUsers",
-                        principalColumn: "Id",
-                        onDelete: ReferentialAction.Cascade);
-                    table.ForeignKey(
-                        name: "FK_Offers_PromoOffers_PromoOfferId",
-                        column: x => x.PromoOfferId,
-                        principalTable: "PromoOffers",
-                        principalColumn: "PromoOfferCode");
                 });
 
             migrationBuilder.CreateTable(
@@ -321,6 +284,7 @@ namespace TripWise.Persistence.Migrations
                     Details = table.Column<string>(type: "nvarchar(max)", nullable: false),
                     IsPartner = table.Column<bool>(type: "bit", nullable: false),
                     Active = table.Column<bool>(type: "bit", nullable: false, defaultValue: true),
+                    Image = table.Column<string>(type: "nvarchar(max)", nullable: false),
                     CityId = table.Column<int>(type: "int", nullable: false)
                 },
                 constraints: table =>
@@ -345,6 +309,7 @@ namespace TripWise.Persistence.Migrations
                     Description = table.Column<string>(type: "nvarchar(max)", nullable: false),
                     IsPartner = table.Column<bool>(type: "bit", nullable: false),
                     Active = table.Column<bool>(type: "bit", nullable: false),
+                    TransportServicePrice = table.Column<decimal>(type: "decimal(18,2)", nullable: false),
                     CityId = table.Column<int>(type: "int", nullable: false),
                     CompanyTypeId = table.Column<int>(type: "int", nullable: false)
                 },
@@ -366,44 +331,6 @@ namespace TripWise.Persistence.Migrations
                 });
 
             migrationBuilder.CreateTable(
-                name: "Contracts",
-                columns: table => new
-                {
-                    ContractCode = table.Column<int>(type: "int", nullable: false)
-                        .Annotation("SqlServer:Identity", "1, 1"),
-                    CustomerId = table.Column<int>(type: "int", nullable: false),
-                    AgentId = table.Column<int>(type: "int", nullable: false),
-                    OfferCode = table.Column<int>(type: "int", nullable: false),
-                    TimeSigned = table.Column<DateTime>(type: "datetime2", nullable: false),
-                    TotalPrice = table.Column<decimal>(type: "decimal(18,2)", nullable: false),
-                    PaymentDate = table.Column<DateTime>(type: "datetime2", nullable: false),
-                    PaymentTime = table.Column<TimeSpan>(type: "time", nullable: false),
-                    PaymentAmount = table.Column<decimal>(type: "decimal(18,2)", nullable: false),
-                    Refunded = table.Column<bool>(type: "bit", nullable: false),
-                    RefundedTime = table.Column<DateTime>(type: "datetime2", nullable: true),
-                    RefundedAmount = table.Column<decimal>(type: "decimal(18,2)", nullable: true)
-                },
-                constraints: table =>
-                {
-                    table.PrimaryKey("PK_Contracts", x => x.ContractCode);
-                    table.ForeignKey(
-                        name: "FK_Contracts_Agents_AgentId",
-                        column: x => x.AgentId,
-                        principalTable: "Agents",
-                        principalColumn: "AgentCode");
-                    table.ForeignKey(
-                        name: "FK_Contracts_AspNetUsers_CustomerId",
-                        column: x => x.CustomerId,
-                        principalTable: "AspNetUsers",
-                        principalColumn: "Id");
-                    table.ForeignKey(
-                        name: "FK_Contracts_Offers_OfferCode",
-                        column: x => x.OfferCode,
-                        principalTable: "Offers",
-                        principalColumn: "OfferCode");
-                });
-
-            migrationBuilder.CreateTable(
                 name: "Hotel_Service",
                 columns: table => new
                 {
@@ -412,6 +339,7 @@ namespace TripWise.Persistence.Migrations
                     HotelId = table.Column<int>(type: "int", nullable: false),
                     RoomTypeId = table.Column<int>(type: "int", nullable: false),
                     ServicePrice = table.Column<decimal>(type: "decimal(18,2)", nullable: false),
+                    FinalServicePrice = table.Column<decimal>(type: "decimal(18,2)", nullable: false),
                     Active = table.Column<bool>(type: "bit", nullable: false)
                 },
                 constraints: table =>
@@ -470,33 +398,53 @@ namespace TripWise.Persistence.Migrations
                 });
 
             migrationBuilder.CreateTable(
-                name: "OfferHotelServices",
+                name: "Offers",
                 columns: table => new
                 {
-                    OfferCode = table.Column<int>(type: "int", nullable: false)
+                    OfferId = table.Column<int>(type: "int", nullable: false)
                         .Annotation("SqlServer:Identity", "1, 1"),
+                    OfferName = table.Column<string>(type: "nvarchar(100)", maxLength: 100, nullable: false),
+                    Description = table.Column<string>(type: "nvarchar(255)", maxLength: 255, nullable: false),
+                    Created = table.Column<DateTime>(type: "datetime2", nullable: false),
+                    ActiveFrom = table.Column<DateTime>(type: "datetime2", nullable: false),
+                    ActiveTo = table.Column<DateTime>(type: "datetime2", nullable: false),
+                    TimeAccepted = table.Column<DateTime>(type: "datetime2", nullable: true),
+                    IsAccepted = table.Column<bool>(type: "bit", nullable: false, defaultValue: false),
                     HotelServiceId = table.Column<int>(type: "int", nullable: false),
-                    Price = table.Column<decimal>(type: "decimal(18,2)", nullable: false),
-                    DiscountPercent = table.Column<int>(type: "int", nullable: false),
-                    FinalServicePrice = table.Column<decimal>(type: "decimal(18,2)", nullable: false),
-                    Description = table.Column<string>(type: "nvarchar(max)", nullable: false),
-                    OfferCode1 = table.Column<int>(type: "int", nullable: false)
+                    TransportCompanyId = table.Column<int>(type: "int", nullable: false),
+                    PromoOfferId = table.Column<int>(type: "int", nullable: true),
+                    CustomerId = table.Column<int>(type: "int", nullable: false),
+                    AgentCode = table.Column<int>(type: "int", nullable: true)
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_OfferHotelServices", x => x.OfferCode);
+                    table.PrimaryKey("PK_Offers", x => x.OfferId);
                     table.ForeignKey(
-                        name: "FK_OfferHotelServices_Hotel_Service_HotelServiceId",
+                        name: "FK_Offers_Agent_AgentCode",
+                        column: x => x.AgentCode,
+                        principalTable: "Agent",
+                        principalColumn: "AgentCode");
+                    table.ForeignKey(
+                        name: "FK_Offers_AspNetUsers_CustomerId",
+                        column: x => x.CustomerId,
+                        principalTable: "AspNetUsers",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
+                    table.ForeignKey(
+                        name: "FK_Offers_Hotel_Service_HotelServiceId",
                         column: x => x.HotelServiceId,
                         principalTable: "Hotel_Service",
-                        principalColumn: "HotelServiceId",
-                        onDelete: ReferentialAction.Cascade);
+                        principalColumn: "HotelServiceId");
                     table.ForeignKey(
-                        name: "FK_OfferHotelServices_Offers_OfferCode1",
-                        column: x => x.OfferCode1,
-                        principalTable: "Offers",
-                        principalColumn: "OfferCode",
-                        onDelete: ReferentialAction.Cascade);
+                        name: "FK_Offers_PromoOffers_PromoOfferId",
+                        column: x => x.PromoOfferId,
+                        principalTable: "PromoOffers",
+                        principalColumn: "PromoOfferCode");
+                    table.ForeignKey(
+                        name: "FK_Offers_TransportCompanies_TransportCompanyId",
+                        column: x => x.TransportCompanyId,
+                        principalTable: "TransportCompanies",
+                        principalColumn: "CompanyId");
                 });
 
             migrationBuilder.CreateTable(
@@ -524,36 +472,6 @@ namespace TripWise.Persistence.Migrations
                         column: x => x.PromoOfferId,
                         principalTable: "PromoOffers",
                         principalColumn: "PromoOfferCode",
-                        onDelete: ReferentialAction.Cascade);
-                });
-
-            migrationBuilder.CreateTable(
-                name: "OfferTransportServices",
-                columns: table => new
-                {
-                    OfferCode = table.Column<int>(type: "int", nullable: false)
-                        .Annotation("SqlServer:Identity", "1, 1"),
-                    TransportServiceId = table.Column<int>(type: "int", nullable: false),
-                    Price = table.Column<decimal>(type: "decimal(18,2)", nullable: false),
-                    DiscountPercent = table.Column<int>(type: "int", nullable: false),
-                    FinalServicePrice = table.Column<decimal>(type: "decimal(18,2)", nullable: false),
-                    Description = table.Column<string>(type: "nvarchar(max)", nullable: false),
-                    OfferCode1 = table.Column<int>(type: "int", nullable: false)
-                },
-                constraints: table =>
-                {
-                    table.PrimaryKey("PK_OfferTransportServices", x => x.OfferCode);
-                    table.ForeignKey(
-                        name: "FK_OfferTransportServices_Offers_OfferCode1",
-                        column: x => x.OfferCode1,
-                        principalTable: "Offers",
-                        principalColumn: "OfferCode",
-                        onDelete: ReferentialAction.Cascade);
-                    table.ForeignKey(
-                        name: "FK_OfferTransportServices_Transport_Service_TransportServiceId",
-                        column: x => x.TransportServiceId,
-                        principalTable: "Transport_Service",
-                        principalColumn: "TransportServiceId",
                         onDelete: ReferentialAction.Cascade);
                 });
 
@@ -589,6 +507,75 @@ namespace TripWise.Persistence.Migrations
                         column: x => x.TransportServiceId1,
                         principalTable: "Transport_Service",
                         principalColumn: "TransportServiceId");
+                });
+
+            migrationBuilder.CreateTable(
+                name: "Contracts",
+                columns: table => new
+                {
+                    ContractCode = table.Column<int>(type: "int", nullable: false)
+                        .Annotation("SqlServer:Identity", "1, 1"),
+                    CustomerId = table.Column<int>(type: "int", nullable: false),
+                    AgentId = table.Column<int>(type: "int", nullable: false),
+                    OfferCode = table.Column<int>(type: "int", nullable: false),
+                    TimeSigned = table.Column<DateTime>(type: "datetime2", nullable: false),
+                    TotalPrice = table.Column<decimal>(type: "decimal(18,2)", nullable: false),
+                    PaymentDate = table.Column<DateTime>(type: "datetime2", nullable: false),
+                    PaymentTime = table.Column<TimeSpan>(type: "time", nullable: false),
+                    PaymentAmount = table.Column<decimal>(type: "decimal(18,2)", nullable: false),
+                    Refunded = table.Column<bool>(type: "bit", nullable: false),
+                    RefundedTime = table.Column<DateTime>(type: "datetime2", nullable: true),
+                    RefundedAmount = table.Column<decimal>(type: "decimal(18,2)", nullable: true)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_Contracts", x => x.ContractCode);
+                    table.ForeignKey(
+                        name: "FK_Contracts_Agent_AgentId",
+                        column: x => x.AgentId,
+                        principalTable: "Agent",
+                        principalColumn: "AgentCode");
+                    table.ForeignKey(
+                        name: "FK_Contracts_AspNetUsers_CustomerId",
+                        column: x => x.CustomerId,
+                        principalTable: "AspNetUsers",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
+                    table.ForeignKey(
+                        name: "FK_Contracts_Offers_OfferCode",
+                        column: x => x.OfferCode,
+                        principalTable: "Offers",
+                        principalColumn: "OfferId");
+                });
+
+            migrationBuilder.CreateTable(
+                name: "OfferTransportService",
+                columns: table => new
+                {
+                    OfferCode = table.Column<int>(type: "int", nullable: false)
+                        .Annotation("SqlServer:Identity", "1, 1"),
+                    TransportServiceId = table.Column<int>(type: "int", nullable: false),
+                    Price = table.Column<decimal>(type: "decimal(18,2)", nullable: false),
+                    DiscountPercent = table.Column<int>(type: "int", nullable: false),
+                    FinalServicePrice = table.Column<decimal>(type: "decimal(18,2)", nullable: false),
+                    Description = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    OfferId = table.Column<int>(type: "int", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_OfferTransportService", x => x.OfferCode);
+                    table.ForeignKey(
+                        name: "FK_OfferTransportService_Offers_OfferId",
+                        column: x => x.OfferId,
+                        principalTable: "Offers",
+                        principalColumn: "OfferId",
+                        onDelete: ReferentialAction.Cascade);
+                    table.ForeignKey(
+                        name: "FK_OfferTransportService_Transport_Service_TransportServiceId",
+                        column: x => x.TransportServiceId,
+                        principalTable: "Transport_Service",
+                        principalColumn: "TransportServiceId",
+                        onDelete: ReferentialAction.Cascade);
                 });
 
             migrationBuilder.CreateIndex(
@@ -631,9 +618,9 @@ namespace TripWise.Persistence.Migrations
                 filter: "[NormalizedUserName] IS NOT NULL");
 
             migrationBuilder.CreateIndex(
-                name: "IX_City_CountryCode",
+                name: "IX_City_CountryId",
                 table: "City",
-                column: "CountryCode");
+                column: "CountryId");
 
             migrationBuilder.CreateIndex(
                 name: "IX_Contracts_AgentId",
@@ -666,19 +653,9 @@ namespace TripWise.Persistence.Migrations
                 column: "CityId");
 
             migrationBuilder.CreateIndex(
-                name: "IX_OfferHotelServices_HotelServiceId",
-                table: "OfferHotelServices",
-                column: "HotelServiceId");
-
-            migrationBuilder.CreateIndex(
-                name: "IX_OfferHotelServices_OfferCode1",
-                table: "OfferHotelServices",
-                column: "OfferCode1");
-
-            migrationBuilder.CreateIndex(
-                name: "IX_Offers_AgentId",
+                name: "IX_Offers_AgentCode",
                 table: "Offers",
-                column: "AgentId");
+                column: "AgentCode");
 
             migrationBuilder.CreateIndex(
                 name: "IX_Offers_CustomerId",
@@ -686,18 +663,28 @@ namespace TripWise.Persistence.Migrations
                 column: "CustomerId");
 
             migrationBuilder.CreateIndex(
+                name: "IX_Offers_HotelServiceId",
+                table: "Offers",
+                column: "HotelServiceId");
+
+            migrationBuilder.CreateIndex(
                 name: "IX_Offers_PromoOfferId",
                 table: "Offers",
                 column: "PromoOfferId");
 
             migrationBuilder.CreateIndex(
-                name: "IX_OfferTransportServices_OfferCode1",
-                table: "OfferTransportServices",
-                column: "OfferCode1");
+                name: "IX_Offers_TransportCompanyId",
+                table: "Offers",
+                column: "TransportCompanyId");
 
             migrationBuilder.CreateIndex(
-                name: "IX_OfferTransportServices_TransportServiceId",
-                table: "OfferTransportServices",
+                name: "IX_OfferTransportService_OfferId",
+                table: "OfferTransportService",
+                column: "OfferId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_OfferTransportService_TransportServiceId",
+                table: "OfferTransportService",
                 column: "TransportServiceId");
 
             migrationBuilder.CreateIndex(
@@ -773,10 +760,7 @@ namespace TripWise.Persistence.Migrations
                 name: "Contracts");
 
             migrationBuilder.DropTable(
-                name: "OfferHotelServices");
-
-            migrationBuilder.DropTable(
-                name: "OfferTransportServices");
+                name: "OfferTransportService");
 
             migrationBuilder.DropTable(
                 name: "PromoOfferHotelServices");
@@ -791,22 +775,16 @@ namespace TripWise.Persistence.Migrations
                 name: "Offers");
 
             migrationBuilder.DropTable(
-                name: "Hotel_Service");
-
-            migrationBuilder.DropTable(
                 name: "Transport_Service");
 
             migrationBuilder.DropTable(
                 name: "AspNetUsers");
 
             migrationBuilder.DropTable(
+                name: "Hotel_Service");
+
+            migrationBuilder.DropTable(
                 name: "PromoOffers");
-
-            migrationBuilder.DropTable(
-                name: "Hotels");
-
-            migrationBuilder.DropTable(
-                name: "RoomTypes");
 
             migrationBuilder.DropTable(
                 name: "TicketTypes");
@@ -815,13 +793,19 @@ namespace TripWise.Persistence.Migrations
                 name: "TransportCompanies");
 
             migrationBuilder.DropTable(
-                name: "Agents");
+                name: "Hotels");
 
             migrationBuilder.DropTable(
-                name: "City");
+                name: "RoomTypes");
+
+            migrationBuilder.DropTable(
+                name: "Agent");
 
             migrationBuilder.DropTable(
                 name: "CompanyTypes");
+
+            migrationBuilder.DropTable(
+                name: "City");
 
             migrationBuilder.DropTable(
                 name: "Country");

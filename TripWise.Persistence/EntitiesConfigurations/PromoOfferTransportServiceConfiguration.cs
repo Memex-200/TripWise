@@ -7,7 +7,7 @@ using System.Text;
 using System.Threading.Tasks;
 using TripWise.Domain.Entities;
 
-namespace TripWise.Persistence.Entity_sConfigurations
+namespace TripWise.EntityFrameworkCore.EntitiesConfigurations
 {
     public class PromoOfferTransportServiceConfiguration : IEntityTypeConfiguration<PromoOfferTransportService>
     {

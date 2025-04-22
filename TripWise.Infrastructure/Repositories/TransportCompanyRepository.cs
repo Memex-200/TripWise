@@ -6,7 +6,8 @@ using System.Text;
 using System.Threading.Tasks;
 using TripWise.Application.Interfaces.Repositories;
 using TripWise.Domain.Entities;
-using TripWise.Persistence;
+using TripWise.EntityFrameworkCore;
+
 
 namespace TripWise.Infrastructure.Repositories
 {

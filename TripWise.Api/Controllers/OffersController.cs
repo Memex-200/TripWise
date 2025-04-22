@@ -86,9 +86,9 @@ namespace TripWise.Api.Controllers
                 })
                 .ToList();
 
-            if (!offerDtos.Any())
+         /*   if (!offerDtos.Any())
                 return NotFound("No active offers found.");
-
+         */
             return Ok(offerDtos);
         }
     }

@@ -2,9 +2,10 @@
 using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
 using TripWise.Domain.Entities;
-using TripWise.Persistence.Entity_sConfigurations;
+using TripWise.EntityFrameworkCore;
+using TripWise.EntityFrameworkCore.EntitiesConfigurations;
 
-namespace TripWise.Persistence
+namespace TripWise.EntityFrameworkCore
 {
     public class ApplicationDbContext : IdentityDbContext<Customer, IdentityRole<int>, int>
     {

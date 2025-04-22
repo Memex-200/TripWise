@@ -3,7 +3,8 @@ using System.Collections.Generic;
 using System.Threading.Tasks;
 using TripWise.Application.Interfaces.Repositories;
 using TripWise.Domain.Entities;
-using TripWise.Persistence;
+using TripWise.EntityFrameworkCore;
+
 
 namespace TripWise.Infrastructure.Repositories
 {
@@ -16,6 +17,7 @@ namespace TripWise.Infrastructure.Repositories
             _context = context;
         }
 
+        // improve include performance (select)
         public async Task<IEnumerable<Offer>> GetAllOffersAsync()
         {
             return await _context.Offers

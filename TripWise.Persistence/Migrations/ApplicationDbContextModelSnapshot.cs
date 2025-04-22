@@ -4,11 +4,11 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
-using TripWise.Persistence;
+using TripWise.EntityFrameworkCore;
 
 #nullable disable
 
-namespace TripWise.Persistence.Migrations
+namespace TripWise.EntityFrameworkCore.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
     partial class ApplicationDbContextModelSnapshot : ModelSnapshot
@@ -21,6 +21,38 @@ namespace TripWise.Persistence.Migrations
                 .HasAnnotation("Relational:MaxIdentifierLength", 128);
 
             SqlServerModelBuilderExtensions.UseIdentityColumns(modelBuilder);
+
+            modelBuilder.Entity("HotelService", b =>
+                {
+                    b.Property<int>("HotelServiceId")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("HotelServiceId"));
+
+                    b.Property<bool>("Active")
+                        .HasColumnType("bit");
+
+                    b.Property<decimal>("FinalServicePrice")
+                        .HasColumnType("decimal(18,2)");
+
+                    b.Property<int>("HotelId")
+                        .HasColumnType("int");
+
+                    b.Property<int>("RoomTypeId")
+                        .HasColumnType("int");
+
+                    b.Property<decimal>("ServicePrice")
+                        .HasColumnType("decimal(18,2)");
+
+                    b.HasKey("HotelServiceId");
+
+                    b.HasIndex("HotelId");
+
+                    b.HasIndex("RoomTypeId");
+
+                    b.ToTable("Hotel_Service", (string)null);
+                });
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRole<int>", b =>
                 {
@@ -155,6 +187,52 @@ namespace TripWise.Persistence.Migrations
                     b.ToTable("AspNetUserTokens", (string)null);
                 });
 
+            modelBuilder.Entity("TransportCompany", b =>
+                {
+                    b.Property<int>("CompanyId")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("CompanyId"));
+
+                    b.Property<bool>("Active")
+                        .HasColumnType("bit");
+
+                    b.Property<int>("CityId")
+                        .HasColumnType("int");
+
+                    b.Property<string>("CompanyName")
+                        .IsRequired()
+                        .HasMaxLength(100)
+                        .HasColumnType("nvarchar(100)");
+
+                    b.Property<int>("CompanyTypeId")
+                        .HasColumnType("int");
+
+                    b.Property<string>("Description")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("HQAddress")
+                        .IsRequired()
+                        .HasMaxLength(255)
+                        .HasColumnType("nvarchar(255)");
+
+                    b.Property<bool>("IsPartner")
+                        .HasColumnType("bit");
+
+                    b.Property<decimal>("TransportServicePrice")
+                        .HasColumnType("decimal(18,2)");
+
+                    b.HasKey("CompanyId");
+
+                    b.HasIndex("CityId");
+
+                    b.HasIndex("CompanyTypeId");
+
+                    b.ToTable("TransportCompanies");
+                });
+
             modelBuilder.Entity("TripWise.Domain.Entities.Agent", b =>
                 {
                     b.Property<int>("AgentCode")
@@ -178,7 +256,7 @@ namespace TripWise.Persistence.Migrations
 
                     b.HasKey("AgentCode");
 
-                    b.ToTable("Agents");
+                    b.ToTable("Agent");
                 });
 
             modelBuilder.Entity("TripWise.Domain.Entities.City", b =>
@@ -194,14 +272,12 @@ namespace TripWise.Persistence.Migrations
                         .HasMaxLength(100)
                         .HasColumnType("nvarchar(100)");
 
-                    b.Property<string>("CountryCode")
-                        .IsRequired()
-                        .HasMaxLength(3)
-                        .HasColumnType("nvarchar(3)");
+                    b.Property<int>("CountryId")
+                        .HasColumnType("int");
 
                     b.HasKey("CityId");
 
-                    b.HasIndex("CountryCode");
+                    b.HasIndex("CountryId");
 
                     b.ToTable("City", (string)null);
                 });
@@ -278,16 +354,18 @@ namespace TripWise.Persistence.Migrations
 
             modelBuilder.Entity("TripWise.Domain.Entities.Country", b =>
                 {
-                    b.Property<string>("CountryCode")
-                        .HasMaxLength(3)
-                        .HasColumnType("nvarchar(3)");
+                    b.Property<int>("CountryId")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("CountryId"));
 
                     b.Property<string>("CountryName")
                         .IsRequired()
                         .HasMaxLength(100)
                         .HasColumnType("nvarchar(100)");
 
-                    b.HasKey("CountryCode");
+                    b.HasKey("CountryId");
 
                     b.ToTable("Country", (string)null);
                 });
@@ -313,7 +391,9 @@ namespace TripWise.Persistence.Migrations
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<DateTime>("CustomerFrom")
-                        .HasColumnType("datetime2");
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("datetime2")
+                        .HasDefaultValueSql("GETUTCDATE()");
 
                     b.Property<string>("Details")
                         .IsRequired()
@@ -321,8 +401,8 @@ namespace TripWise.Persistence.Migrations
 
                     b.Property<string>("Email")
                         .IsRequired()
-                        .HasMaxLength(256)
-                        .HasColumnType("nvarchar(256)");
+                        .HasMaxLength(100)
+                        .HasColumnType("nvarchar(100)");
 
                     b.Property<bool>("EmailConfirmed")
                         .HasColumnType("bit");
@@ -423,6 +503,10 @@ namespace TripWise.Persistence.Migrations
                         .HasMaxLength(100)
                         .HasColumnType("nvarchar(100)");
 
+                    b.Property<string>("Image")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
                     b.Property<bool>("IsPartner")
                         .HasColumnType("bit");
 
@@ -433,47 +517,13 @@ namespace TripWise.Persistence.Migrations
                     b.ToTable("Hotels");
                 });
 
-            modelBuilder.Entity("TripWise.Domain.Entities.HotelService", b =>
-                {
-                    b.Property<int>("HotelServiceId")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int");
-
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("HotelServiceId"));
-
-                    b.Property<bool>("Active")
-                        .HasColumnType("bit");
-
-                    b.Property<int>("HotelId")
-                        .HasColumnType("int");
-
-                    b.Property<int>("RoomTypeId")
-                        .HasColumnType("int");
-
-                    b.Property<decimal>("ServicePrice")
-                        .HasColumnType("decimal(18,2)");
-
-                    b.HasKey("HotelServiceId");
-
-                    b.HasIndex("HotelId");
-
-                    b.HasIndex("RoomTypeId");
-
-                    b.ToTable("Hotel_Service", (string)null);
-                });
-
             modelBuilder.Entity("TripWise.Domain.Entities.Offer", b =>
                 {
-                    b.Property<int>("OfferCode")
+                    b.Property<int>("OfferId")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("int");
 
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("OfferCode"));
-
-                    b.Property<bool>("Accepted")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("bit")
-                        .HasDefaultValue(false);
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("OfferId"));
 
                     b.Property<DateTime>("ActiveFrom")
                         .HasColumnType("datetime2");
@@ -481,11 +531,27 @@ namespace TripWise.Persistence.Migrations
                     b.Property<DateTime>("ActiveTo")
                         .HasColumnType("datetime2");
 
-                    b.Property<int>("AgentId")
+                    b.Property<int?>("AgentCode")
                         .HasColumnType("int");
+
+                    b.Property<DateTime>("Created")
+                        .HasColumnType("datetime2");
 
                     b.Property<int>("CustomerId")
                         .HasColumnType("int");
+
+                    b.Property<string>("Description")
+                        .IsRequired()
+                        .HasMaxLength(255)
+                        .HasColumnType("nvarchar(255)");
+
+                    b.Property<int>("HotelServiceId")
+                        .HasColumnType("int");
+
+                    b.Property<bool>("IsAccepted")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("bit")
+                        .HasDefaultValue(false);
 
                     b.Property<string>("OfferName")
                         .IsRequired()
@@ -498,54 +564,22 @@ namespace TripWise.Persistence.Migrations
                     b.Property<DateTime?>("TimeAccepted")
                         .HasColumnType("datetime2");
 
-                    b.Property<DateTime>("TimeCreated")
-                        .HasColumnType("datetime2");
+                    b.Property<int>("TransportCompanyId")
+                        .HasColumnType("int");
 
-                    b.HasKey("OfferCode");
+                    b.HasKey("OfferId");
 
-                    b.HasIndex("AgentId");
+                    b.HasIndex("AgentCode");
 
                     b.HasIndex("CustomerId");
 
-                    b.HasIndex("PromoOfferId");
-
-                    b.ToTable("Offers");
-                });
-
-            modelBuilder.Entity("TripWise.Domain.Entities.OfferHotelService", b =>
-                {
-                    b.Property<int>("OfferCode")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int");
-
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("OfferCode"));
-
-                    b.Property<string>("Description")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<int>("DiscountPercent")
-                        .HasColumnType("int");
-
-                    b.Property<decimal>("FinalServicePrice")
-                        .HasColumnType("decimal(18,2)");
-
-                    b.Property<int>("HotelServiceId")
-                        .HasColumnType("int");
-
-                    b.Property<int>("OfferCode1")
-                        .HasColumnType("int");
-
-                    b.Property<decimal>("Price")
-                        .HasColumnType("decimal(18,2)");
-
-                    b.HasKey("OfferCode");
-
                     b.HasIndex("HotelServiceId");
 
-                    b.HasIndex("OfferCode1");
+                    b.HasIndex("PromoOfferId");
 
-                    b.ToTable("OfferHotelServices");
+                    b.HasIndex("TransportCompanyId");
+
+                    b.ToTable("Offers");
                 });
 
             modelBuilder.Entity("TripWise.Domain.Entities.OfferTransportService", b =>
@@ -566,7 +600,7 @@ namespace TripWise.Persistence.Migrations
                     b.Property<decimal>("FinalServicePrice")
                         .HasColumnType("decimal(18,2)");
 
-                    b.Property<int>("OfferCode1")
+                    b.Property<int>("OfferId")
                         .HasColumnType("int");
 
                     b.Property<decimal>("Price")
@@ -577,11 +611,11 @@ namespace TripWise.Persistence.Migrations
 
                     b.HasKey("OfferCode");
 
-                    b.HasIndex("OfferCode1");
+                    b.HasIndex("OfferId");
 
                     b.HasIndex("TransportServiceId");
 
-                    b.ToTable("OfferTransportServices");
+                    b.ToTable("OfferTransportService");
                 });
 
             modelBuilder.Entity("TripWise.Domain.Entities.PromoOffer", b =>
@@ -710,49 +744,6 @@ namespace TripWise.Persistence.Migrations
                     b.ToTable("TicketTypes");
                 });
 
-            modelBuilder.Entity("TripWise.Domain.Entities.TransportCompany", b =>
-                {
-                    b.Property<int>("CompanyId")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int");
-
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("CompanyId"));
-
-                    b.Property<bool>("Active")
-                        .HasColumnType("bit");
-
-                    b.Property<int>("CityId")
-                        .HasColumnType("int");
-
-                    b.Property<string>("CompanyName")
-                        .IsRequired()
-                        .HasMaxLength(100)
-                        .HasColumnType("nvarchar(100)");
-
-                    b.Property<int>("CompanyTypeId")
-                        .HasColumnType("int");
-
-                    b.Property<string>("Description")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("HQAddress")
-                        .IsRequired()
-                        .HasMaxLength(255)
-                        .HasColumnType("nvarchar(255)");
-
-                    b.Property<bool>("IsPartner")
-                        .HasColumnType("bit");
-
-                    b.HasKey("CompanyId");
-
-                    b.HasIndex("CityId");
-
-                    b.HasIndex("CompanyTypeId");
-
-                    b.ToTable("TransportCompanies");
-                });
-
             modelBuilder.Entity("TripWise.Domain.Entities.TransportService", b =>
                 {
                     b.Property<int>("TransportServiceId")
@@ -790,6 +781,25 @@ namespace TripWise.Persistence.Migrations
                     b.HasIndex("TransportCompanyId");
 
                     b.ToTable("Transport_Service", (string)null);
+                });
+
+            modelBuilder.Entity("HotelService", b =>
+                {
+                    b.HasOne("TripWise.Domain.Entities.Hotel", "Hotel")
+                        .WithMany("HotelServices")
+                        .HasForeignKey("HotelId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("TripWise.Domain.Entities.RoomType", "RoomType")
+                        .WithMany("HotelServices")
+                        .HasForeignKey("RoomTypeId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Hotel");
+
+                    b.Navigation("RoomType");
                 });
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRoleClaim<int>", b =>
@@ -843,11 +853,30 @@ namespace TripWise.Persistence.Migrations
                         .IsRequired();
                 });
 
+            modelBuilder.Entity("TransportCompany", b =>
+                {
+                    b.HasOne("TripWise.Domain.Entities.City", "City")
+                        .WithMany("TransportCompanies")
+                        .HasForeignKey("CityId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("TripWise.Domain.Entities.CompanyType", "CompanyType")
+                        .WithMany("TransportCompanies")
+                        .HasForeignKey("CompanyTypeId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("City");
+
+                    b.Navigation("CompanyType");
+                });
+
             modelBuilder.Entity("TripWise.Domain.Entities.City", b =>
                 {
                     b.HasOne("TripWise.Domain.Entities.Country", "Country")
                         .WithMany("Cities")
-                        .HasForeignKey("CountryCode")
+                        .HasForeignKey("CountryId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
@@ -865,7 +894,7 @@ namespace TripWise.Persistence.Migrations
                     b.HasOne("TripWise.Domain.Entities.Customer", "Customer")
                         .WithMany("Contracts")
                         .HasForeignKey("CustomerId")
-                        .OnDelete(DeleteBehavior.NoAction)
+                        .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
                     b.HasOne("TripWise.Domain.Entities.Offer", "Offer")
@@ -892,32 +921,11 @@ namespace TripWise.Persistence.Migrations
                     b.Navigation("City");
                 });
 
-            modelBuilder.Entity("TripWise.Domain.Entities.HotelService", b =>
-                {
-                    b.HasOne("TripWise.Domain.Entities.Hotel", "Hotel")
-                        .WithMany("HotelServices")
-                        .HasForeignKey("HotelId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.HasOne("TripWise.Domain.Entities.RoomType", "RoomType")
-                        .WithMany("HotelServices")
-                        .HasForeignKey("RoomTypeId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.Navigation("Hotel");
-
-                    b.Navigation("RoomType");
-                });
-
             modelBuilder.Entity("TripWise.Domain.Entities.Offer", b =>
                 {
-                    b.HasOne("TripWise.Domain.Entities.Agent", "Agent")
+                    b.HasOne("TripWise.Domain.Entities.Agent", null)
                         .WithMany("Offers")
-                        .HasForeignKey("AgentId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
+                        .HasForeignKey("AgentCode");
 
                     b.HasOne("TripWise.Domain.Entities.Customer", "Customer")
                         .WithMany("Offers")
@@ -925,41 +933,37 @@ namespace TripWise.Persistence.Migrations
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
+                    b.HasOne("HotelService", "HotelService")
+                        .WithMany("Offers")
+                        .HasForeignKey("HotelServiceId")
+                        .OnDelete(DeleteBehavior.NoAction)
+                        .IsRequired();
+
                     b.HasOne("TripWise.Domain.Entities.PromoOffer", "PromoOffer")
                         .WithMany("Offers")
-                        .HasForeignKey("PromoOfferId");
+                        .HasForeignKey("PromoOfferId")
+                        .OnDelete(DeleteBehavior.NoAction);
 
-                    b.Navigation("Agent");
+                    b.HasOne("TransportCompany", "TransportCompany")
+                        .WithMany("Offers")
+                        .HasForeignKey("TransportCompanyId")
+                        .OnDelete(DeleteBehavior.NoAction)
+                        .IsRequired();
 
                     b.Navigation("Customer");
 
-                    b.Navigation("PromoOffer");
-                });
-
-            modelBuilder.Entity("TripWise.Domain.Entities.OfferHotelService", b =>
-                {
-                    b.HasOne("TripWise.Domain.Entities.HotelService", "HotelService")
-                        .WithMany("Offers")
-                        .HasForeignKey("HotelServiceId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.HasOne("TripWise.Domain.Entities.Offer", "Offer")
-                        .WithMany("OfferHotelServices")
-                        .HasForeignKey("OfferCode1")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
                     b.Navigation("HotelService");
 
-                    b.Navigation("Offer");
+                    b.Navigation("PromoOffer");
+
+                    b.Navigation("TransportCompany");
                 });
 
             modelBuilder.Entity("TripWise.Domain.Entities.OfferTransportService", b =>
                 {
                     b.HasOne("TripWise.Domain.Entities.Offer", "Offer")
-                        .WithMany("OfferTransportServices")
-                        .HasForeignKey("OfferCode1")
+                        .WithMany()
+                        .HasForeignKey("OfferId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
@@ -983,7 +987,7 @@ namespace TripWise.Persistence.Migrations
 
             modelBuilder.Entity("TripWise.Domain.Entities.PromoOfferHotelService", b =>
                 {
-                    b.HasOne("TripWise.Domain.Entities.HotelService", "HotelService")
+                    b.HasOne("HotelService", "HotelService")
                         .WithMany("PromoOffers")
                         .HasForeignKey("HotelServiceId")
                         .OnDelete(DeleteBehavior.Cascade)
@@ -1023,25 +1027,6 @@ namespace TripWise.Persistence.Migrations
                     b.Navigation("TransportService");
                 });
 
-            modelBuilder.Entity("TripWise.Domain.Entities.TransportCompany", b =>
-                {
-                    b.HasOne("TripWise.Domain.Entities.City", "City")
-                        .WithMany("TransportCompanies")
-                        .HasForeignKey("CityId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.HasOne("TripWise.Domain.Entities.CompanyType", "CompanyType")
-                        .WithMany("TransportCompanies")
-                        .HasForeignKey("CompanyTypeId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.Navigation("City");
-
-                    b.Navigation("CompanyType");
-                });
-
             modelBuilder.Entity("TripWise.Domain.Entities.TransportService", b =>
                 {
                     b.HasOne("TripWise.Domain.Entities.City", "FromCity")
@@ -1062,7 +1047,7 @@ namespace TripWise.Persistence.Migrations
                         .OnDelete(DeleteBehavior.NoAction)
                         .IsRequired();
 
-                    b.HasOne("TripWise.Domain.Entities.TransportCompany", "TransportCompany")
+                    b.HasOne("TransportCompany", "TransportCompany")
                         .WithMany("TransportServices")
                         .HasForeignKey("TransportCompanyId")
                         .OnDelete(DeleteBehavior.NoAction)
@@ -1075,6 +1060,20 @@ namespace TripWise.Persistence.Migrations
                     b.Navigation("ToCity");
 
                     b.Navigation("TransportCompany");
+                });
+
+            modelBuilder.Entity("HotelService", b =>
+                {
+                    b.Navigation("Offers");
+
+                    b.Navigation("PromoOffers");
+                });
+
+            modelBuilder.Entity("TransportCompany", b =>
+                {
+                    b.Navigation("Offers");
+
+                    b.Navigation("TransportServices");
                 });
 
             modelBuilder.Entity("TripWise.Domain.Entities.Agent", b =>
@@ -1115,20 +1114,9 @@ namespace TripWise.Persistence.Migrations
                     b.Navigation("HotelServices");
                 });
 
-            modelBuilder.Entity("TripWise.Domain.Entities.HotelService", b =>
-                {
-                    b.Navigation("Offers");
-
-                    b.Navigation("PromoOffers");
-                });
-
             modelBuilder.Entity("TripWise.Domain.Entities.Offer", b =>
                 {
                     b.Navigation("Contracts");
-
-                    b.Navigation("OfferHotelServices");
-
-                    b.Navigation("OfferTransportServices");
                 });
 
             modelBuilder.Entity("TripWise.Domain.Entities.PromoOffer", b =>
@@ -1146,11 +1134,6 @@ namespace TripWise.Persistence.Migrations
                 });
 
             modelBuilder.Entity("TripWise.Domain.Entities.TicketType", b =>
-                {
-                    b.Navigation("TransportServices");
-                });
-
-            modelBuilder.Entity("TripWise.Domain.Entities.TransportCompany", b =>
                 {
                     b.Navigation("TransportServices");
                 });

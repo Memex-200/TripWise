@@ -2,7 +2,7 @@
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
 using TripWise.Domain.Entities;
 
-namespace TripWise.Persistence.Entity_sConfigurations
+namespace TripWise.EntityFrameworkCore
 {
     public class CityConfiguration : IEntityTypeConfiguration<City>
     {

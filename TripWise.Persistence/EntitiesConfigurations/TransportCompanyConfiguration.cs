@@ -2,7 +2,7 @@
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
 using TripWise.Domain.Entities;
 
-namespace TripWise.Persistence
+namespace TripWise.EntityFrameworkCore
 {
     public class TransportCompanyConfiguration : IEntityTypeConfiguration<TransportCompany>
     {
