@@ -20,8 +20,10 @@ public class TransportCompany
     public bool Active { get; set; }
 
     [NotMapped]
+    [Required]
+    [StringLength(255)]
     public string Image { get; set; }
-
+  
     [Column(TypeName = "decimal(18,2)")]
     public decimal TransportServicePrice { get; set; }
 

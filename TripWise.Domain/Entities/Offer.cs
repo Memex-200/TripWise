@@ -25,9 +25,6 @@ namespace TripWise.Domain.Entities
 
         public bool IsAccepted { get; set; } 
 
-        [NotMapped]
-        public string Image { get; set; } 
-
         [ForeignKey("HotelService")]
         public int HotelServiceId { get; set; } 
 
