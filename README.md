@@ -22,28 +22,13 @@ It is a .NET-based travel planning solution using Clean Architecture principles.
 
 ## Solution Structure
 
-The solution consists of 5 projects following domain-driven design:
+The solution consists of 5 main projects:
 
-```markdown
-TripWise/
-├── .github/workflows/    # GitHub Actions CI/CD
-├── TripWise.Api/         # API Entry Point
-│   ├── Controllers/
-│   ├── appsettings.json
-│   └── Program.cs
-├── TripWise.Application/ # Business Logic
-│   ├── DTOs/
-│   └── Interfaces/
-├── TripWise.Domain/      # Domain Models
-│   └── Entities/
-├── TripWise.EntityFrameworkCore/ # Database
-│   ├── Migrations/
-│   ├── EntitiesConfigurations/
-│   └── ApplicationDbContext.cs
-└── TripWise.Infrastructure/ # Implementation
-    ├── Repositories/
-    └── Services/
-```
+1. **TripWise.Api** - The API layer containing controllers and startup configuration
+2. **TripWise.Application** - Business logic layer with DTOs, interfaces, and services
+3. **TripWise.Domain** - Contains all domain entities and core business models
+4. **TripWise.EntityFrameworkCore** - Data access layer with configurations and migrations
+5. **TripWise.Infrastructure** - Infrastructure services and repository implementations
 
 
 
