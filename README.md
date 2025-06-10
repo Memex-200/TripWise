@@ -47,10 +47,6 @@ TripWise/
 
 
 
-## Dependency Diagram
-
-![deepseek_mermaid_20250610_1accda](D:\IT\Level(4)\Graduation Project\deepseek_mermaid_20250610_1accda.png)
-
 ## Getting Started
 
 ### 1. Clone Repository
